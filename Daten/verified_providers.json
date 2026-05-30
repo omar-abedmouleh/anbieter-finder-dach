@@ -1,0 +1,48 @@
+[
+  {
+    "name": "Personal Training Hannover Kaluza + Team",
+    "category": "DEXA",
+    "services": [
+      "Body Composition",
+      "Bone Density"
+    ],
+    "address": "Hannoversche Str. 82, 30916 Isernhagen",
+    "searchCity": "Hannover",
+    "searchCountry": "DE",
+    "coordinates": {
+      "lat": 52.4241307,
+      "lng": 9.8418112
+    },
+    "contact": {
+      "phone": "0174 4010440",
+      "website": "http://www.personaltrainer-hannover.de/",
+      "googleMaps": "https://maps.google.com/?cid=5873563489059837400&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA"
+    },
+    "selfPayer": true,
+    "priceRange": "€€",
+    "ai_justification": "Der Anbieter listet unter seinen Leistungen 'Körperanalyse Hannover: Professionelle Messung von Koerperfett, Muskelmasse und mehr.' auf, was die Analyse der Körperzusammensetzung (Fettanteil, Muskelmasse) abdeckt. Es gibt jedoch keine Hinweise auf die Möglichkeit, als Selbstzahler direkt Blut abnehmen und analysieren zu lassen."
+  },
+  {
+    "name": "EMS Training Körperformen Hannover-Kirchrode",
+    "category": "Bloodlab",
+    "services": [
+      "Blood Test (Self-Payer)",
+      "Direct Walk-In"
+    ],
+    "address": "Bemeroder Str. 71, 30559 Hannover",
+    "searchCity": "Hannover",
+    "searchCountry": "DE",
+    "coordinates": {
+      "lat": 52.3485223,
+      "lng": 9.811702
+    },
+    "contact": {
+      "phone": "0511 64692880",
+      "website": "http://www.koerperformen-ems-training.de/",
+      "googleMaps": "https://maps.google.com/?cid=4131565678765645676&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA"
+    },
+    "selfPayer": true,
+    "priceRange": "€",
+    "ai_justification": "DEXA/DXA Ganzkörper-Scans werden nicht erwähnt. Stattdessen wird die Inbody Körperanalysewaage (BIA) angeboten. Trockenbluttests und Laboranalysen sind explizit als Teil des Biohackings und Longevity Coachings aufgeführt, was den direkten Zugang als Selbstzahler nahelegt, zumal keine Überweisung erwähnt wird und es sich um ein Coaching-Studio handelt."
+  }
+]
