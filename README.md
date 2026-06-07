@@ -356,3 +356,68 @@ Interne Verifizierungsinformationen werden im Frontend nicht angezeigt, weil sie
 Preise werden nur angezeigt, wenn öffentliche und eindeutige Preisinformationen in den Daten vorhanden sind.
 
 Wenn keine zuverlässige öffentliche Preisinformation gefunden wurde, wird im User Interface kein Preis angezeigt.
+## Umgebungsvariablen 
+
+Für die Datensammlung und die optionale KI-Verifizierung werden API-Schlüssel benötigt.
+
+Diese Schlüssel werden lokal in einer `.env`-Datei gespeichert:
+
+```txt
+GOOGLE_PLACES_API_KEY=your_google_places_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+
+Der `GOOGLE_PLACES_API_KEY` wird von `scripts/search_candidates.py` verwendet, um Kandidaten über die Google Places API zu sammeln.
+
+Der `GEMINI_API_KEY` wird von `scripts/ai_verifier.py` verwendet, um Anbieter-Websites automatisiert mit Gemini zu prüfen.
+
+## Projekt lokal starten
+
+### Voraussetzungen
+
+Für das Frontend werden benötigt:
+
+* Node.js
+* npm
+
+### Frontend installieren
+
+Zuerst in den Frontend-Ordner wechseln:
+
+```bash
+cd frontend
+```
+
+Dann die Abhängigkeiten installieren:
+
+```bash
+npm install
+```
+
+### Entwicklungsserver starten
+
+Die Anwendung kann lokal mit folgendem Befehl gestartet werden:
+
+```bash
+npm run dev
+```
+
+Danach zeigt Vite eine lokale URL an:
+
+```txt
+http://localhost:5173
+```
+## Was ich mit mehr Zeit noch machen würde
+
+Mit mehr Zeit würde ich vor allem die Datenqualität weiter verbessern und die Anwendung technisch erweitern.
+
+Mögliche nächste Schritte wären:
+
+* Die Ergebnisse mit weiteren Fachpersonen gegenprüfen.
+* Weitere Städte in Deutschland, Österreich und der Schweiz ergänzen, insbesondere für DEXA-Anbieter.
+* Die Datei `manual_review_candidates.json` vollständig manuell durchgehen.
+* Bei Unsicherheiten Anbieter direkt kontaktieren, zum Beispiel telefonisch oder per E-Mail.
+* Marker-Clustering für viele Anbieter ergänzen.
+* Eine Backend-API oder Datenbank statt einer statischen JSON-Datei verwenden.
+* Ein Docker-Setup ergänzen, damit das Projekt einfacher gestartet werden kann.

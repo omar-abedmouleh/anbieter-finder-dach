@@ -53,10 +53,6 @@ After this script creates Daten/candidates.json, each candidate must still be ch
 # Cities used for the automated search
 # Germany is searched broadly across many important cities.
 # You can add or remove cities here without changing the rest of the code.
-#
-# Note:
-# More cities = more Google Places API requests.
-# If you want to reduce API usage, start with fewer cities.
 GERMANY_CITIES = [
     "Berlin",
     "Hamburg",

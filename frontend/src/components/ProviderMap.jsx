@@ -1,3 +1,4 @@
+
 import { useMemo, useState } from "react";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import L from "leaflet";
@@ -38,6 +39,10 @@ function getCategory(provider) {
 function getAddressText(provider) {
   if (typeof provider.address === "string") {
     return provider.address;
+  }
+
+  if (provider.address?.formatted) {
+    return provider.address.formatted;
   }
 
   if (provider.address) {
@@ -94,7 +99,7 @@ function formatSelfPayer(value) {
     return "Nein";
   }
 
-  return "Nicht separat angegeben";
+  return "k.A.";
 }
 
 // Marker colors by provider category.
@@ -127,7 +132,6 @@ function ProviderMap() {
   const [selectedProviderId, setSelectedProviderId] = useState(null);
 
   const providers = getRawProviders();
- 
 
   const providersWithCoordinates = useMemo(() => {
     return providers.filter(
@@ -207,11 +211,11 @@ function ProviderMap() {
                 }`}
                 onClick={() => setSelectedProviderId(providerId)}
               >
-<div className="badge-row">
-  <span className={`badge ${category.toLowerCase()}`}>
-    {category}
-  </span>
-</div>
+                <div className="badge-row">
+                  <span className={`badge ${category.toLowerCase()}`}>
+                    {category}
+                  </span>
+                </div>
 
                 <h3>{provider.name}</h3>
 
@@ -240,8 +244,6 @@ function ProviderMap() {
               <strong>Kategorie:</strong> {getCategory(selectedProvider)}
             </p>
 
-
-
             <p>
               <strong>Adresse:</strong>
               <br />
@@ -259,11 +261,12 @@ function ProviderMap() {
               {formatSelfPayer(selectedProvider.selfPayerPossible)}
             </p>
 
-         {selectedProvider.prices && (
-  <p>
-    <strong>Preis:</strong> {formatPrice(selectedProvider.prices)}
-  </p>
-)}
+            {selectedProvider.prices && (
+              <p>
+                <strong>Preis:</strong>{" "}
+                {formatPrice(selectedProvider.prices)}
+              </p>
+            )}
 
             {selectedProvider.sourceQuery && (
               <p>
@@ -329,71 +332,70 @@ function ProviderMap() {
                 }}
               >
                 <Popup>
-  <div className="popup-content">
-    <h3>{provider.name}</h3>
+                  <div className="popup-content">
+                    <h3>{provider.name}</h3>
 
-    <p>
-      <strong>Kategorie:</strong> {category}
-    </p>
+                    <p>
+                      <strong>Kategorie:</strong> {category}
+                    </p>
 
+                    <p>
+                      <strong>Leistungen:</strong>
+                      <br />
+                      {getServicesText(provider)}
+                    </p>
 
+                    <p>
+                      <strong>Adresse:</strong>
+                      <br />
+                      {getAddressText(provider)}
+                    </p>
 
-    <p>
-      <strong>Leistungen:</strong>
-      <br />
-      {getServicesText(provider)}
-    </p>
+                    <p>
+                      <strong>Koordinaten:</strong>
+                      <br />
+                      Lat: {provider.coordinates.lat}, Lng:{" "}
+                      {provider.coordinates.lng}
+                    </p>
 
-    <p>
-      <strong>Adresse:</strong>
-      <br />
-      {getAddressText(provider)}
-    </p>
+                    <p>
+                      <strong>Selbstzahler möglich:</strong>{" "}
+                      {formatSelfPayer(provider.selfPayerPossible)}
+                    </p>
 
-    <p>
-      <strong>Koordinaten:</strong>
-      <br />
-      Lat: {provider.coordinates.lat}, Lng: {provider.coordinates.lng}
-    </p>
+                    {provider.prices && (
+                      <p>
+                        <strong>Preis:</strong> {formatPrice(provider.prices)}
+                      </p>
+                    )}
 
-    <p>
-      <strong>Selbstzahler möglich:</strong>{" "}
-      {formatSelfPayer(provider.selfPayerPossible)}
-    </p>
+                    {provider.contact?.phone && (
+                      <p>
+                        <strong>Telefon:</strong> {provider.contact.phone}
+                      </p>
+                    )}
 
-{provider.prices && (
-  <p>
-    <strong>Preis:</strong> {formatPrice(provider.prices)}
-  </p>
-)}
+                    {provider.contact?.website && (
+                      <a
+                        href={provider.contact.website}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Website öffnen
+                      </a>
+                    )}
 
-    {provider.contact?.phone && (
-      <p>
-        <strong>Telefon:</strong> {provider.contact.phone}
-      </p>
-    )}
-
-    {provider.contact?.website && (
-      <a
-        href={provider.contact.website}
-        target="_blank"
-        rel="noreferrer"
-      >
-        Website öffnen
-      </a>
-    )}
-
-    {provider.contact?.googleMaps && (
-      <a
-        href={provider.contact.googleMaps}
-        target="_blank"
-        rel="noreferrer"
-      >
-        Google Maps öffnen
-      </a>
-    )}
-  </div>
-</Popup>
+                    {provider.contact?.googleMaps && (
+                      <a
+                        href={provider.contact.googleMaps}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Google Maps öffnen
+                      </a>
+                    )}
+                  </div>
+                </Popup>
               </Marker>
             );
           })}
@@ -404,3 +406,4 @@ function ProviderMap() {
 }
 
 export default ProviderMap;
+
