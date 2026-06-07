@@ -195,7 +195,7 @@ def main():
             
             if is_dexa or is_blood:
                 category = "DEXA" if is_dexa else "Bloodlab"
-                verified_candidate = {
+                verified_candidate_ai = {
                     "name": name,
                     "category": category,
                     "services": extracted_services if extracted_services else ([ "Body Composition" ] if is_dexa else [ "Blood Test (Self-Payer)" ]),
@@ -208,7 +208,7 @@ def main():
                     "priceRange": price_info,
                     "ai_justification": explanation
                 }
-                verified_list.append(verified_candidate)
+                verified_list.append(verified_candidate_ai)
                 
                 # In verified_providers.json speichern
                 with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
