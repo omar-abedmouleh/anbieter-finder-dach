@@ -245,7 +245,7 @@ frontend/src/data/providers.json
 
 Das Frontend befindet sich im Ordner `frontend/` und wurde mit React und Vite entwickelt.
 
-Das Hauptziel des Frontends ist es, die verifizierten Anbieter aus der finalen Datenbasis auf einer interaktiven Karte darzustellen.
+Das Hauptziel des Frontends ist es, die verifizierten Anbieter aus der finalen Datenbasis auf einer interaktiven Karte darzustellen. Die Anwendung bietet eine übersichtliche Sidebar mit Filtern, eine Kartenansicht mit Markern sowie Detailinformationen zu den einzelnen Anbietern.
 
 ### Verwendete Technologien
 
@@ -259,7 +259,7 @@ Das Frontend verwendet folgende Technologien:
 * React-Leaflet
 * OpenStreetMap Tiles
 
-React wird für den Aufbau der Benutzeroberfläche mit wiederverwendbaren Komponenten verwendet. Vite dient als Build-Tool und ermöglicht eine schnelle Entwicklungsumgebung. Leaflet und React-Leaflet werden genutzt, um die interaktive Karte, Marker und Popups darzustellen.
+React wird für den Aufbau der Benutzeroberfläche mit wiederverwendbaren Komponenten verwendet. Vite dient als Build-Tool und ermöglicht eine schnelle Entwicklungsumgebung. Leaflet und React-Leaflet werden genutzt, um die interaktive Karte, Marker und Popups darzustellen. OpenStreetMap wird als Kartenbasis verwendet.
 
 ### Relevante Frontend-Dateien
 
@@ -269,13 +269,13 @@ Die wichtigsten Frontend-Dateien sind:
   Dies ist die Hauptkomponente der Anwendung. Sie rendert den Header der Seite und bindet die Kartenkomponente ein.
 
 * `frontend/src/components/ProviderMap.jsx`
-  Diese Komponente enthält die Hauptlogik der Karte. Sie lädt die Anbieterdaten, filtert die Anbieter nach Kategorie und rendert Sidebar, Marker, Popups und Detailbereich.
+  Diese Komponente enthält die Hauptlogik der Karte. Sie lädt die Anbieterdaten, filtert die Anbieter nach Kategorie, Land und Stadt und rendert Sidebar, Marker, Popups, Anbieter-Karten und Detailbereich.
 
 * `frontend/src/data/providers.json`
   Diese Datei enthält die für das Frontend vorbereitete Datenbasis. Sie ist eine Kopie der verifizierten Anbieter und wird direkt von der React-Anwendung importiert.
 
 * `frontend/src/index.css`
-  Diese Datei enthält das Styling der Anwendung, zum Beispiel Layout, Sidebar, Anbieter-Karten, Buttons, Kartenbereich, Popups und responsives Design.
+  Diese Datei enthält das Styling der Anwendung, zum Beispiel Layout, Header, Sidebar, Filter, Anbieter-Karten, Buttons, Kartenbereich, Popups und responsives Design.
 
 ### Nutzung der Daten im Frontend
 
@@ -285,13 +285,15 @@ Das React-Frontend importiert die Anbieterdaten aus:
 frontend/src/data/providers.json
 ```
 
-Diese Daten werden verwendet, um alle verifizierten Anbieter auf der Karte anzuzeigen.
+Diese Daten werden verwendet, um alle verifizierten Anbieter auf der Karte und in der Sidebar anzuzeigen.
 
 Jeder Anbieter enthält Informationen wie:
 
 * Name des Anbieters
 * Kategorie
 * Adresse
+* Stadt
+* Land
 * Koordinaten
 * Kontaktinformationen
 * Website
@@ -307,31 +309,54 @@ Die Karte bietet folgende Funktionen:
 
 * interaktive Karte auf Basis von OpenStreetMap
 * ein Marker pro Anbieter mit gültigen Koordinaten
-* unterschiedliche Markerfarben nach Kategorie
+* unterschiedliche Markerfarben nach Kategorie:
 
   * blauer Marker für DEXA-Anbieter
   * roter Marker für Blutlabore
 * Popup mit Anbieterinformationen beim Klick auf einen Marker
-* Sidebar mit allen Anbietern
-* Kategorie-Filter:
-
-  * alle Anbieter
-  * nur DEXA-Anbieter
-  * nur Blutlabore
+* Sidebar mit allen gefilterten Anbietern
 * Detailbereich für den ausgewählten Anbieter
-* responsives Layout für Desktop und mobile Geräte
+* responsive Darstellung für Desktop und mobile Geräte
 
-### Filterlogik
+### Filterfunktionen
 
-Das Frontend erlaubt es Nutzern, Anbieter nach Kategorie zu filtern.
+Das Frontend erlaubt es Nutzern, Anbieter gezielt zu filtern.
 
-Die verfügbaren Filter sind:
+Es gibt drei Filterebenen:
+
+#### Kategorie
 
 * `Alle`
 * `DEXA`
 * `Blutlabor`
 
-Wenn ein Filter ausgewählt wird, werden nur Anbieter der entsprechenden Kategorie in der Sidebar und auf der Karte angezeigt.
+#### Land
+
+* `Alle Länder`
+* `Deutschland`
+* `Österreich`
+* `Schweiz`
+
+#### Stadt
+
+Die Städte werden automatisch aus den vorhandenen Daten erzeugt. Wenn ein Land ausgewählt wird, wird die Städte-Auswahlliste passend zu diesem Land aktualisiert.
+
+Dadurch können Nutzer zuerst ein Land auswählen und anschließend gezielt eine verfügbare Stadt filtern.
+
+### Anbieter-Karten
+
+Die Anbieter werden in der Sidebar als Karten dargestellt.
+
+Eine Anbieter-Karte zeigt:
+
+* Kategorie
+* Name
+* Adresse
+* Land
+* Stadt
+* kurze Leistungsbeschreibung
+
+Wenn eine Anbieter-Karte angeklickt wird, wird sie markiert. Zusätzlich erscheinen kleine Aktionsbuttons, mit denen Nutzer direkt die Website des Anbieters oder den Google-Maps-Eintrag in einem neuen Tab öffnen können.
 
 ### Angezeigte Anbieterinformationen
 
@@ -342,6 +367,8 @@ Angezeigt werden:
 * Name
 * Kategorie
 * Adresse
+* Stadt
+* Land
 * kurze Leistungsbeschreibung
 * Selbstzahler-Status
 * Preis, falls öffentlich verfügbar
@@ -356,7 +383,8 @@ Interne Verifizierungsinformationen werden im Frontend nicht angezeigt, weil sie
 Preise werden nur angezeigt, wenn öffentliche und eindeutige Preisinformationen in den Daten vorhanden sind.
 
 Wenn keine zuverlässige öffentliche Preisinformation gefunden wurde, wird im User Interface kein Preis angezeigt.
-## Umgebungsvariablen 
+
+## Umgebungsvariablen
 
 Für die Datensammlung und die optionale KI-Verifizierung werden API-Schlüssel benötigt.
 
@@ -366,7 +394,6 @@ Diese Schlüssel werden lokal in einer `.env`-Datei gespeichert:
 GOOGLE_PLACES_API_KEY=your_google_places_api_key_here
 GEMINI_API_KEY=your_gemini_api_key_here
 ```
-
 
 Der `GOOGLE_PLACES_API_KEY` wird von `scripts/search_candidates.py` verwendet, um Kandidaten über die Google Places API zu sammeln.
 
@@ -403,11 +430,15 @@ Die Anwendung kann lokal mit folgendem Befehl gestartet werden:
 npm run dev
 ```
 
-Danach zeigt Vite eine lokale URL an:
+Danach zeigt Vite eine lokale URL an, meistens:
 
 ```txt
 http://localhost:5173
 ```
+
+Über diese URL kann die Webanwendung im Browser geöffnet werden.
+
+
 ## Was ich mit mehr Zeit noch machen würde
 
 Mit mehr Zeit würde ich vor allem die Datenqualität weiter verbessern und die Anwendung technisch erweitern.

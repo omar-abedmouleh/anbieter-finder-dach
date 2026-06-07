@@ -1,4 +1,3 @@
-
 import { useMemo, useState } from "react";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import L from "leaflet";
@@ -33,6 +32,33 @@ function getRawProviders() {
 // Returns the provider category used for filtering and marker color.
 function getCategory(provider) {
   return provider.category || provider.targetCategory || "Unbekannt";
+}
+
+// Returns the country code used for country filtering.
+function getCountry(provider) {
+  return provider.address?.country || provider.searchCountry || "Unbekannt";
+}
+
+// Converts country codes into readable labels.
+function getCountryLabel(countryCode) {
+  if (countryCode === "DE") {
+    return "Deutschland";
+  }
+
+  if (countryCode === "AT") {
+    return "Österreich";
+  }
+
+  if (countryCode === "CH") {
+    return "Schweiz";
+  }
+
+  return countryCode;
+}
+
+// Returns the city used for city filtering.
+function getCity(provider) {
+  return provider.address?.city || provider.searchCity || "Unbekannt";
 }
 
 // Returns a readable address string for the sidebar and popup.
@@ -129,6 +155,8 @@ const markerIcons = {
 
 function ProviderMap() {
   const [activeFilter, setActiveFilter] = useState("Alle");
+  const [activeCountry, setActiveCountry] = useState("Alle");
+  const [activeCity, setActiveCity] = useState("Alle");
   const [selectedProviderId, setSelectedProviderId] = useState(null);
 
   const providers = getRawProviders();
@@ -142,15 +170,31 @@ function ProviderMap() {
     );
   }, [providers]);
 
-  const filteredProviders = useMemo(() => {
-    if (activeFilter === "Alle") {
-      return providersWithCoordinates;
-    }
+  const availableCities = useMemo(() => {
+    const cities = providersWithCoordinates
+      .filter((provider) => {
+        return activeCountry === "Alle" || getCountry(provider) === activeCountry;
+      })
+      .map((provider) => getCity(provider))
+      .filter((city) => city && city !== "Unbekannt");
 
-    return providersWithCoordinates.filter(
-      (provider) => getCategory(provider) === activeFilter
-    );
-  }, [activeFilter, providersWithCoordinates]);
+    return [...new Set(cities)].sort((a, b) => a.localeCompare(b, "de"));
+  }, [providersWithCoordinates, activeCountry]);
+
+  const filteredProviders = useMemo(() => {
+    return providersWithCoordinates.filter((provider) => {
+      const categoryMatches =
+        activeFilter === "Alle" || getCategory(provider) === activeFilter;
+
+      const countryMatches =
+        activeCountry === "Alle" || getCountry(provider) === activeCountry;
+
+      const cityMatches =
+        activeCity === "Alle" || getCity(provider) === activeCity;
+
+      return categoryMatches && countryMatches && cityMatches;
+    });
+  }, [activeFilter, activeCountry, activeCity, providersWithCoordinates]);
 
   const selectedProvider = filteredProviders.find(
     (provider) =>
@@ -177,19 +221,68 @@ function ProviderMap() {
             DEXA · {bloodLabCount} Blutlabor
           </p>
 
-          <div className="filter-buttons">
-            {["Alle", "DEXA", "Blutlabor"].map((filter) => (
-              <button
-                key={filter}
-                className={activeFilter === filter ? "active" : ""}
-                onClick={() => {
-                  setActiveFilter(filter);
-                  setSelectedProviderId(null);
-                }}
-              >
-                {filter}
-              </button>
-            ))}
+          <div className="filter-group">
+            <p className="filter-label">Kategorie</p>
+
+            <div className="filter-buttons">
+              {["Alle", "DEXA", "Blutlabor"].map((filter) => (
+                <button
+                  key={filter}
+                  className={activeFilter === filter ? "active" : ""}
+                  onClick={() => {
+                    setActiveFilter(filter);
+                    setSelectedProviderId(null);
+                  }}
+                >
+                  {filter}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="filter-group">
+            <p className="filter-label">Land</p>
+
+            <div className="filter-buttons country-buttons">
+              {[
+                { value: "Alle", label: "Alle Länder" },
+                { value: "DE", label: "Deutschland" },
+                { value: "AT", label: "Österreich" },
+                { value: "CH", label: "Schweiz" },
+              ].map((country) => (
+                <button
+                  key={country.value}
+                  className={activeCountry === country.value ? "active" : ""}
+                  onClick={() => {
+                    setActiveCountry(country.value);
+                    setActiveCity("Alle");
+                    setSelectedProviderId(null);
+                  }}
+                >
+                  {country.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="filter-group">
+            <p className="filter-label">Stadt</p>
+
+            <select
+              className="city-select"
+              value={activeCity}
+              onChange={(event) => {
+                setActiveCity(event.target.value);
+                setSelectedProviderId(null);
+              }}
+            >
+              <option value="Alle">Alle Städte</option>
+              {availableCities.map((city) => (
+                <option key={city} value={city}>
+                  {city}
+                </option>
+              ))}
+            </select>
           </div>
 
           <p className="result-count">
@@ -222,14 +315,42 @@ function ProviderMap() {
                 <p>{getAddressText(provider)}</p>
 
                 <p>
+                  <strong>Land:</strong>{" "}
+                  {getCountryLabel(getCountry(provider))}
+                </p>
+
+                <p>
+                  <strong>Stadt:</strong> {getCity(provider)}
+                </p>
+
+                <p>
                   <strong>Leistungen:</strong> {getServicesText(provider)}
                 </p>
 
-                {provider.searchCity && provider.searchCountry && (
-                  <p>
-                    <strong>Suchregion:</strong> {provider.searchCity},{" "}
-                    {provider.searchCountry}
-                  </p>
+                {selectedProviderId === providerId && (
+                  <div className="card-actions">
+                    {provider.contact?.website && (
+                      <a
+                        href={provider.contact.website}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(event) => event.stopPropagation()}
+                      >
+                        Website öffnen
+                      </a>
+                    )}
+
+                    {provider.contact?.googleMaps && (
+                      <a
+                        href={provider.contact.googleMaps}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(event) => event.stopPropagation()}
+                      >
+                        Google Maps öffnen
+                      </a>
+                    )}
+                  </div>
                 )}
               </article>
             );
@@ -242,6 +363,15 @@ function ProviderMap() {
 
             <p>
               <strong>Kategorie:</strong> {getCategory(selectedProvider)}
+            </p>
+
+            <p>
+              <strong>Land:</strong>{" "}
+              {getCountryLabel(getCountry(selectedProvider))}
+            </p>
+
+            <p>
+              <strong>Stadt:</strong> {getCity(selectedProvider)}
             </p>
 
             <p>
@@ -265,14 +395,6 @@ function ProviderMap() {
               <p>
                 <strong>Preis:</strong>{" "}
                 {formatPrice(selectedProvider.prices)}
-              </p>
-            )}
-
-            {selectedProvider.sourceQuery && (
-              <p>
-                <strong>Gefunden über:</strong>
-                <br />
-                {selectedProvider.sourceQuery}
               </p>
             )}
 
@@ -337,6 +459,15 @@ function ProviderMap() {
 
                     <p>
                       <strong>Kategorie:</strong> {category}
+                    </p>
+
+                    <p>
+                      <strong>Land:</strong>{" "}
+                      {getCountryLabel(getCountry(provider))}
+                    </p>
+
+                    <p>
+                      <strong>Stadt:</strong> {getCity(provider)}
                     </p>
 
                     <p>
